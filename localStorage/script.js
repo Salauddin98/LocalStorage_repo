@@ -8,6 +8,7 @@ const displayProduct = (data) => {
     // console.log(data[0].image)
     const cards = document.getElementById("cards");
     data.forEach((product) => {
+        const isBookmarked = checkBookmark(product.id)
         const card = document.createElement("div");
         card.classList.add("card", "m-2");
         // const isBookmarked = checkBookmark(product.id);
@@ -15,8 +16,9 @@ const displayProduct = (data) => {
         card.innerHTML = `
               
                 <div class="bookmark-icon">
-                    <i onclick="handleRemoveBookMark('${product.id}')" class="fa-solid fa-bookmark"></i>
-                    <i class="fa-regular fa-bookmark" onclick="handleBookMark('${product.name}','${product.id}','${product.price}')"></i>
+                 
+                    <i onclick="${isBookmarked ? `handleRemoveBookMark('${product.id}') `: `handleBookMark('${product.name}', '${product.id}', '${product.price}')`}" class="${isBookmarked ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'}"></i>
+                 
                 </div>
                 <div class="product-img-container">
                     <img class="product-img" src="${product.image}" alt="" />
@@ -67,15 +69,15 @@ const handleBookMark = (name, id, price) => {
     if (previousBookMark) {
         // console.log('ace re')
         const isThisBookmarkItem = previousBookMark.find(pd => pd.id == id)
-        if(isThisBookmarkItem){
+        if (isThisBookmarkItem) {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Item is already added!',
                 footer: '<a href="">Why do I have this issue?</a>'
-              })
-        }else{
-            bookmark.push(...previousBookMark,products);
+            })
+        } else {
+            bookmark.push(...previousBookMark, products);
             localStorage.setItem('bookmark', JSON.stringify(bookmark));
             console.log(bookmark);
         }
@@ -86,11 +88,24 @@ const handleBookMark = (name, id, price) => {
     // console.log({ name, id, price })
 }
 
-const handleRemoveBookMark = (id)=>{
+//remove card item from localStorage---->
+const handleRemoveBookMark = (id) => {
     const previousBookMark = JSON.parse(localStorage.getItem('bookmark'));
     const restOfThem = previousBookMark.filter(item => item.id != id);
     localStorage.setItem('bookmark', JSON.stringify(restOfThem));
-    
+}
+
+//apply toggle for bookmark---->
+const checkBookmark = (id) => {
+    // console.log(id)
+    // console.log(typeof id);
+    const previousBookMark = JSON.parse(localStorage.getItem('bookmark'));
+    const isBookmarked = previousBookMark.find(mark => mark.id == id);
+    if (isBookmarked) {
+        return true
+    } else {
+        return false;
+    }
 }
 
 
@@ -136,6 +151,7 @@ const handleRemoveBookMark = (id)=>{
 //     }
 // };
 
-
+{/* <i onclick="handleRemoveBookMark('${product.id}')" class="fa-solid fa-bookmark"></i>
+<i class="fa-regular fa-bookmark" onclick="handleBookMark('${product.name}','${product.id}','${product.price}')"></i> */}
 
 loadProduct();
